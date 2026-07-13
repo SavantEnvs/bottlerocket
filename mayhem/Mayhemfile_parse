@@ -1,0 +1,6 @@
+project: savantenvs/bottlerocket
+target: parse
+
+cmds:
+  - cmd: /mayhem/parse
+    libfuzzer: true

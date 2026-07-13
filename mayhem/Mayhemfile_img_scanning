@@ -1,0 +1,6 @@
+project: savantenvs/bottlerocket
+target: img-scanning
+
+cmds:
+  - cmd: /mayhem/img_scanning
+    libfuzzer: true
