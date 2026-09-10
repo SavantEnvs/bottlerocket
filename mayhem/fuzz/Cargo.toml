@@ -1,0 +1,46 @@
+[package]
+name = "bottlerocket-mayhem-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+# The ghostdog and parse-datetime crates moved out of this repo into
+# bottlerocket-core-kit (https://github.com/bottlerocket-os/bottlerocket-core-kit).
+# Pin the current core-kit tip so the historical fuzz targets keep fuzzing the
+# same (now-relocated) Bottlerocket code.
+parse-datetime = { git = "https://github.com/bottlerocket-os/bottlerocket-core-kit.git", rev = "547aa9ee98ca8b124acafa188f5a1e67817497a1" }
+# ghostdog is a binary-only crate in core-kit (no lib target), so the img_scanning
+# harness inlines its find_device_type() over the same gptman/GUID code path.
+gptman = { version = "1", default-features = false }
+hex-literal = "0.4"
+# parse-datetime's build-dependency chain (generate-readme -> cargo-readme) is pinned
+# by core-kit's OWN workspace Cargo.lock (cargo-readme=3.3.1), which we don't inherit
+# here (this crate is its own isolated [workspace]). Without a matching constraint,
+# a fresh resolve picks the newest "3" release; cargo-readme 3.4.0 changed
+# generate_readme()'s signature (bool args -> ReadmeOptions) and breaks core-kit's
+# pinned-rev generate-readme build script. Pin it to the version core-kit expects.
+cargo-readme = "=3.3.1"
+
+# Prevent this from interfering with the repo's workspaces
+[workspace]
+members = ["."]
+
+[profile.release]
+debug = 1
+
+[[bin]]
+name = "parse"
+path = "fuzz_targets/parse.rs"
+test = false
+doc = false
+
+[[bin]]
+name = "img_scanning"
+path = "fuzz_targets/img_scanning.rs"
+test = false
+doc = false
