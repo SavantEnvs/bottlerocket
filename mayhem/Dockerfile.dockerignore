@@ -1,0 +1,8 @@
+# BuildKit per-Dockerfile ignore: overrides the root .dockerignore for
+# `docker build -f mayhem/Dockerfile`. Upstream's root .dockerignore excludes
+# /.git, but the commit image MUST bake in the full git history (SPEC §6.2 item 2),
+# so this keeps .git while still pruning build artifacts.
+/.gomodcache
+/build/*
+**/target/*
+/sbkeys
