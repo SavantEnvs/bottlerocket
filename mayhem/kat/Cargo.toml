@@ -1,0 +1,31 @@
+# Additive known-answer probe for the Mayhem integration (mayhem/test.sh's behavioral
+# oracle). Lives under mayhem/kat/ and is NEVER part of upstream. Built CLEAN (no sanitizer,
+# no fuzzing cfg) as a normal dynamically-linked binary by mayhem/build.sh.
+#
+# Depends on the SAME code the fuzz targets exercise, at the SAME pins as mayhem/fuzz:
+# parse-datetime from bottlerocket-core-kit (git rev) and gptman 1.x (core-kit's pin).
+[package]
+name = "bottlerocket-mayhem-kat"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[[bin]]
+name = "bottlerocket-kat"
+path = "src/main.rs"
+test = false
+doc = false
+
+[dependencies]
+parse-datetime = { git = "https://github.com/bottlerocket-os/bottlerocket-core-kit.git", rev = "547aa9ee98ca8b124acafa188f5a1e67817497a1" }
+gptman = { version = "1", default-features = false }
+hex-literal = "0.4"
+# Same constraint as mayhem/fuzz: parse-datetime's build-dependency chain (generate-readme
+# -> cargo-readme "3") is pinned by core-kit's own lockfile (3.3.1), which this standalone
+# crate does not inherit; cargo-readme 3.4.0 changed generate_readme()'s signature and
+# breaks core-kit's pinned-rev generate-readme build script. Pin it to what core-kit expects.
+cargo-readme = "=3.3.1"
+
+# Keep this crate out of the upstream root workspace's resolution.
+[workspace]
+members = ["."]

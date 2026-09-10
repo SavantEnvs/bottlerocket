@@ -1,0 +1,12 @@
+project: savantenvs/bottlerocket
+target: parse
+
+# Server-accumulated corpus (REQUIRED for accumulation) + per-target starter seeds
+# (RFC 3339 timestamps and "in N units" shorthands; relative path, resolved on the runner).
+testsuite:
+  - https://$MAYHEM_DOMAIN/$MAYHEM_PROJECT/$MAYHEM_TARGET/testsuite.tar
+  - file://mayhem/parse/testsuite
+
+cmds:
+  - cmd: /mayhem/parse
+    libfuzzer: true
